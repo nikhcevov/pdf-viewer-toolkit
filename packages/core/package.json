@@ -1,10 +1,10 @@
 {
-  "name": "@typescript-library-template/core",
+  "name": "@pdf-viewer-toolkit/core",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/typescript-library-template-core.cjs.js",
-  "module": "dist/typescript-library-template-core.esm.js",
-  "types": "dist/typescript-library-template-core.cjs.d.ts",
+  "description": "Core package for PDF Viewer Toolkit, contains PDF Viewer",
+  "main": "dist/pdf-viewer-toolkit-core.cjs.js",
+  "module": "dist/pdf-viewer-toolkit-core.esm.js",
+  "types": "dist/pdf-viewer-toolkit-core.cjs.d.ts",
   "preconstruct": {
     "entrypoints": [
       "index.ts",
@@ -19,21 +19,23 @@
     "README.md"
   ],
   "keywords": [
-    "typescript"
+    "typescript",
+    "pdf",
+    "viewer",
+    "toolkit"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/.../...git"
+    "url": "git+https://github.com/nikhcevov/pdf-viewer-toolkit.git"
   },
-  "author": "",
+  "author": "Vladimir Ovechkin",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/.../.../issues"
+    "url": "https://github.com/nikhcevov/pdf-viewer-toolkit/issues"
   },
-  "homepage": "https://github.com/.../...",
+  "homepage": "https://github.com/nikhcevov/pdf-viewer-toolkit#readme",
   "dependencies": {
-    "@babel/runtime": "7.20.7",
-    "@typescript-library-template/utilities": "1.0.0"
+    "@babel/runtime": "7.20.7"
   },
   "devDependencies": {
     "typescript": "4.9.4"

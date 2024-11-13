@@ -1,5 +1,6 @@
-import { print } from '@typescript-library-template/utilities';
+// import { print } from '@pdf-viewer-toolkit/utilities';
 
 export const corePrint = () => {
-  print('core');
+  // print('core');
+  return 'core';
 };

@@ -1,4 +1,4 @@
-# @typescript-library-template/core
+# @pdf-viewer-toolkit/core
 
 ## 1.0.0
 

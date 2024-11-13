@@ -1,1 +1,1 @@
-# @typescript-library-template/core
+# @pdf-viewer-toolkit/core
