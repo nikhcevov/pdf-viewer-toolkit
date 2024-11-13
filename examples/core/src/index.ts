@@ -1,5 +1,5 @@
-import { corePrint } from '@typescript-library-template/core';
-import { modulePrint } from '@typescript-library-template/core/module';
+import { corePrint,  } from '@pdf-viewer-toolkit/core';
+import { modulePrint } from '@pdf-viewer-toolkit/core/module';
 
 corePrint();
 modulePrint();

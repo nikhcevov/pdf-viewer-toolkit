@@ -1,4 +1,4 @@
-# typescript-library-template
+# PDF Viewer Toolkit
 
 This is a template repository for developing libraries for Browser/Node.js with TypeScript.
 
