@@ -1,1 +1,1 @@
-export { PDFViewer } from './PDFViewer';
+export { PDFViewer } from './model/PDFViewer';

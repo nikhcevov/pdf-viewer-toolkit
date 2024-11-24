@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@pdf-viewer-toolkit/core example</title>
   </head>
@@ -11,14 +10,33 @@
     <script type="module" src="/src/index.ts"></script>
 
     <div>
-      <button id="prev" type="button">Previous</button>
-      <button id="next" type="button">Next</button>
-      &nbsp; &nbsp;
-      <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+      <span>
+        Page:
+        <button id="prev" type="button">Previous</button>
+        <button id="next" type="button">Next</button>
+      </span>
+
+      <br />
+      <span>
+        Scale:
+        <button id="scale_plus" type="button">+</button>
+        <button id="scale_minus" type="button">-</button>
+      </span>
     </div>
-    
-    <div>
-      <canvas id="the-canvas" style="border: 1px solid black; direction: ltr; width: 800px; height: 450px;"></canvas>
+
+    <div id="pageContainer" class="container">
+      <div id="viewer" class="pdfViewer" />
     </div>
   </body>
+
+  <style>
+    .container {
+      background: gray;
+      border: 2px solid red;
+      position: absolute;
+      width: 1000px;
+      height: 800px;
+      overflow: auto;
+    }
+  </style>
 </html>

@@ -1,4 +1,0 @@
-{
-  "main": "dist/pdf-viewer-toolkit-core-module.cjs.js",
-  "module": "dist/pdf-viewer-toolkit-core-module.esm.js"
-}

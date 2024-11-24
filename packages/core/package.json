@@ -8,13 +8,13 @@
   "preconstruct": {
     "entrypoints": [
       "index.ts",
-      "module/index.ts"
+      "plugins/measurements/index.ts"
     ]
   },
   "files": [
     "src",
     "dist",
-    "module",
+    "plugins",
     "LICENSE",
     "README.md"
   ],
@@ -36,7 +36,7 @@
   "homepage": "https://github.com/nikhcevov/pdf-viewer-toolkit#readme",
   "dependencies": {
     "@babel/runtime": "7.20.7",
-    "pdfjs-dist": "^4.8.69"
+    "pdfjs-dist": "4.8.69"
   },
   "devDependencies": {
     "typescript": "4.9.4"

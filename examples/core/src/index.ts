@@ -1,38 +1,30 @@
 import { PDFViewer } from "@pdf-viewer-toolkit/core";
 
-const viewer = new PDFViewer({
-  url: "light_pdf.pdf",
-  canvas: document.getElementById("the-canvas") as HTMLCanvasElement,
-});
+const { viewer, setDocument } = new PDFViewer({
+  container: document.getElementById("pageContainer") as HTMLDivElement,
+  viewer: document.getElementById("viewer") as HTMLDivElement,
+})
 
-async function main() {
-  await viewer.init();
-
-  const drawPageNumber = () => {
-    document.getElementById("page_num")!.textContent =
-      viewer.currentPage.toString();
-  };
-
+setDocument("heavy_pdf.pdf").then(() => {
   const onPrevPage = () => {
-    if (viewer.currentPage === 1) {
-      return;
-    }
-    viewer.renderPage(viewer.currentPage - 1);
-    drawPageNumber();
+    viewer.previousPage();
   };
 
   const onNextPage = () => {
-    if (viewer.currentPage === viewer.pageCount) {
-      return;
-    }
-    viewer.renderPage(viewer.currentPage + 1);
-    drawPageNumber();
+    viewer.nextPage();
   };
 
-  drawPageNumber();
-  document.getElementById("page_count")!.textContent = viewer.pageCount.toString();
+  const onScaleMinus = () => {
+    viewer.decreaseScale();
+  };
+
+  const onScalePlus = () => {
+    viewer.increaseScale()
+  };
+
   document.getElementById("prev")?.addEventListener("click", onPrevPage);
   document.getElementById("next")?.addEventListener("click", onNextPage);
-}
+  document.getElementById("scale_plus")?.addEventListener("click", onScalePlus);
+  document.getElementById("scale_minus")?.addEventListener("click", onScaleMinus);
+})
 
-main();
