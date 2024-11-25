@@ -20,17 +20,10 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "noEmit": true
   },
-  "files": [
-    "babel.config.js",
-    "jest.config.js",
-    "jest.dist.js"
-  ],
-  "include": [
-    "packages"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "files": ["babel.config.js", "jest.config.js", "jest.dist.js"],
+  "include": ["packages"],
+  "exclude": ["node_modules"]
 }
