@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@pdf-viewer-toolkit/core/measurements example</title>
+  </head>
+
+  <body>
+    <script type="module" src="/src/index.ts"></script>
+
+    <div class="grid">
+      <span>
+        Page:
+        <button id="prev" type="button">Previous</button>
+        <button id="next" type="button">Next</button>
+      </span>
+
+      <span>
+        Scale:
+        <button id="scale_plus" type="button">+</button>
+        <button id="scale_minus" type="button">-</button>
+      </span>
+    </div>
+
+    <span>
+      Set scale tool:
+      <button id="set_scale_tool" type="button">toggle</button>
+      <button id="area_tool" type="button">Enable area tool</button>
+    </span>
+
+    <div id="pageContainer" class="container">
+      <div id="viewer" class="pdfViewer" />
+    </div>
+  </body>
+
+  <style>
+    .container {
+      background: gray;
+      border: 2px solid red;
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      overflow: auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      gap: 8px;
+    }
+  </style>
+</html>
