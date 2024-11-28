@@ -1,10 +1,10 @@
 {
-  "name": "@pdf-viewer-toolkit/core",
+  "name": "@pdf-viewer-toolkit/measurements-plugin",
   "version": "1.0.0",
-  "description": "Core package for PDF Viewer Toolkit, contains PDF Viewer",
-  "main": "dist/pdf-viewer-toolkit-core.cjs.js",
-  "module": "dist/pdf-viewer-toolkit-core.esm.js",
-  "types": "dist/pdf-viewer-toolkit-core.cjs.d.ts",
+  "description": "Plugin for PDF Viewer Toolkit, contains measurement tools",
+  "main": "dist/pdf-viewer-toolkit-measurements-plugin.cjs.js",
+  "module": "dist/pdf-viewer-toolkit-measurements-plugin.esm.js",
+  "types": "dist/pdf-viewer-toolkit-measurements-plugin.cjs.d.ts",
   "preconstruct": {
     "entrypoints": [
       "index.ts"
@@ -20,7 +20,8 @@
     "typescript",
     "pdf",
     "viewer",
-    "toolkit"
+    "toolkit",
+    "measurements"
   ],
   "repository": {
     "type": "git",
@@ -32,9 +33,12 @@
     "url": "https://github.com/nikhcevov/pdf-viewer-toolkit/issues"
   },
   "homepage": "https://github.com/nikhcevov/pdf-viewer-toolkit#readme",
+  "peerDependencies": {
+    "@pdf-viewer-toolkit/core": "1.0.0"
+  },
   "dependencies": {
     "@babel/runtime": "7.20.7",
-    "pdfjs-dist": "4.8.69"
+    "fabric": "^6.5.1"
   },
   "devDependencies": {
     "typescript": "4.9.4"

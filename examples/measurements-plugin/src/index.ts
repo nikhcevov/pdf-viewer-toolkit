@@ -1,21 +1,19 @@
 import { PDFViewer } from "@pdf-viewer-toolkit/core";
-import {
-  MeasurementsPlugin,
-  MeasurementsPluginTools,
-  // SetScaleTool,
-} from "@pdf-viewer-toolkit/core/plugins/measurements";
-import { EditorPlugin } from "@pdf-viewer-toolkit/core/src/model/EditorPlugin";
+import { EditorPlugin } from "@pdf-viewer-toolkit/core";
+import { SetScaleTool } from "@pdf-viewer-toolkit/measurements-plugin";
 
 const { viewer, setDocument, loadPlugin } = new PDFViewer({
   container: document.getElementById("pageContainer") as HTMLDivElement,
   viewer: document.getElementById("viewer") as HTMLDivElement,
 });
 
-const plugin = new MeasurementsPlugin({ viewer });
+// const plugin = new MeasurementsPlugin({ viewer });
 // const setScaleTool = new SetScaleTool({ viewer });
 const editorPlugin = new EditorPlugin({ viewer });
+const scaleTool = new SetScaleTool({ viewer });
 // loadPlugin(plugin);
 loadPlugin(editorPlugin);
+loadPlugin(scaleTool);
 // loadPlugin(setScaleTool);
 
 setDocument("essay.pdf").then(() => {
@@ -41,8 +39,9 @@ setDocument("essay.pdf").then(() => {
     // setScaleTool.onMeasure = (scale) => {
     //   console.log(measurement);
     // };
+    //
+    scaleTool._toggleEditor();
 
-    editorPlugin._toggleEditor();
     // setScaleTool.toggle();
     // setScaleTool.onMeasure = (measurement) => {
     //   // Let's assume that we have measured a distance of 10 units
@@ -63,7 +62,7 @@ setDocument("essay.pdf").then(() => {
   };
 
   const onAreaToolClick = () => {
-    plugin.toggleTool(MeasurementsPluginTools.AREA);
+    // plugin.toggleTool(MeasurementsPluginTools.AREA);
   };
 
   document.getElementById("prev")?.addEventListener("click", onPrevPage);
