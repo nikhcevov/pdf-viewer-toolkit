@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@pdf-viewer-toolkit/core": "1.0.0",
+    "@pdf-viewer-toolkit/measurements-plugin": "1.0.0",
     "typescript": "4.9.4",
     "vite": "^5.4.10"
   }

@@ -32,6 +32,11 @@ export class EditorPlugin extends Plugin {
     this.isEditorLayerEnabled = false;
     this.eventBus = new EventBus();
     this.currentPageNumbers = [];
+
+    this.load = this.load.bind(this);
+    this.unload = this.unload.bind(this);
+    this._toggleEditor = this._toggleEditor.bind(this);
+    this._getPageCanvas = this._getPageCanvas.bind(this);
   }
 
   public load(): void {
@@ -69,7 +74,8 @@ export class EditorPlugin extends Plugin {
   /**
    * Toggle editor layer (render/destroy editor canvas elements)
    */
-  public _toggleEditor = () => {
+  public _toggleEditor() {
+    console.log("--1");
     if (this.isEditorLayerEnabled) {
       this.isEditorLayerEnabled = false;
       this._pages.forEach((page) =>
@@ -81,7 +87,14 @@ export class EditorPlugin extends Plugin {
         this.renderPageEditorElement({ pageNumber: page.id })
       );
     }
-  };
+  }
+
+  /**
+   * Returns `true` if editor is enabled
+   */
+  public get isEditorEnabled() {
+    return this.isEditorLayerEnabled;
+  }
 
   /**
    * @returns Set of pages, which are currently rendered
@@ -114,11 +127,11 @@ export class EditorPlugin extends Plugin {
    * @param page Page to get canvas for
    * @returns Canvas element for the page
    */
-  public _getPageCanvas = (page: PDFPageView) => {
+  public _getPageCanvas(page: PDFPageView) {
     const elementId = makeCanvasElementId(page);
     const element = document.getElementById(elementId) as HTMLCanvasElement;
     return element;
-  };
+  }
 
   private getPageEditorLayer = (page: PDFPageView) => {
     const editorLayer: AnnotationEditorLayer = page.annotationEditorLayer;
