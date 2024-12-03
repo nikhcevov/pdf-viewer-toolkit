@@ -1,1 +1,1 @@
-export { SetScaleTool } from "./model/SetScaleTool";
+export { MeasurementsPlugin } from "./model/MeasurementsPlugin";
