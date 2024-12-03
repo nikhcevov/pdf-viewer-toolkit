@@ -52,7 +52,7 @@ export class MeasurementsPlugin extends EditorPlugin {
     this._toggleEditor();
 
     this._pages.forEach((page) => {
-      const canvasEl = this._getPageCanvas(page);
+      const canvasEl = this._getPageEditorCanvas(page);
       const canvas = new fabric.Canvas(canvasEl);
 
       const pipePoints: fabric.Circle[] = [];
@@ -168,7 +168,7 @@ export class MeasurementsPlugin extends EditorPlugin {
     this._toggleEditor();
 
     this._pages.forEach((page) => {
-      const canvasEl = this._getPageCanvas(page);
+      const canvasEl = this._getPageEditorCanvas(page);
       const canvas = new fabric.Canvas(canvasEl);
 
       let pointLeft: number | null = null;

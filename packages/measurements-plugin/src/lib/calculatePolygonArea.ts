@@ -1,4 +1,4 @@
-export function calcPolygonArea(vertices: { x: number; y: number }[]) {
+export function calculatePolygonArea(vertices: { x: number; y: number }[]) {
   let total = 0;
 
   for (let i = 0, l = vertices.length; i < l; i++) {
