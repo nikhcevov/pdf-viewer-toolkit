@@ -1,8 +1,8 @@
+import { EventBus } from "../lib/EventBus";
 import { Plugin } from "./Plugin";
 
 import type { PluginProps } from "./Plugin";
 import type { PDFPageView } from "pdfjs-dist/web/pdf_viewer.mjs";
-import { EventBus } from "pdfjs-dist/web/pdf_viewer.mjs";
 
 interface EventWithPageNumber {
   pageNumber: number;
@@ -24,13 +24,13 @@ const makeCanvasElementId = (pageNumber: number) =>
  */
 export class EditorPlugin extends Plugin {
   private isEditorLayerEnabled: boolean;
-  private eventBus: EventBus;
+  private editorEventBus: EventBus;
   private currentPageNumbers: number[];
 
   constructor({ viewer }: PluginProps) {
     super({ viewer });
     this.isEditorLayerEnabled = false;
-    this.eventBus = new EventBus();
+    this.editorEventBus = new EventBus();
     this.currentPageNumbers = [];
 
     this.load = this.load.bind(this);
@@ -121,7 +121,7 @@ export class EditorPlugin extends Plugin {
    * @returns // TODO: write doc
    */
   public get _editorEventBus() {
-    return this.eventBus;
+    return this.editorEventBus;
   }
 
   /**
@@ -211,7 +211,7 @@ export class EditorPlugin extends Plugin {
 
     for (const id of prevPageNumbers) {
       if (!currentPageNumbers.includes(id)) {
-        this.eventBus.dispatch("pagereset", { pageNumber: id });
+        this.editorEventBus.dispatch("pagereset", { pageNumber: id });
       }
     }
 
@@ -221,7 +221,7 @@ export class EditorPlugin extends Plugin {
   private onPageRendered = ({ pageNumber }: EventWithPageNumber) => {
     if (this.isEditorLayerEnabled) {
       this.renderPageCanvas({ pageNumber });
-      this.eventBus.dispatch("pagerender", { pageNumber });
+      this.editorEventBus.dispatch("pagerender", { pageNumber });
     }
   };
 
