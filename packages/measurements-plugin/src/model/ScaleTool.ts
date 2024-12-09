@@ -1,53 +1,78 @@
+import {
+  CIRCLE_CONFIG,
+  PluginEvents,
+  LINE_CONFIG,
+  GROUP_CONFIG,
+} from "../config/consts";
 import { calculatePointsDistance } from "../lib/calculatePointsDistance";
+import { findSimilarFabricObject } from "../lib/findSimilarFabricObject";
 import { MeasurementsPlugin } from "./MeasurementsPlugin";
 import { Tool } from "./Tool";
 import * as fabric from "fabric";
 
-const findSimilarObject = (canvas: fabric.Canvas, object: fabric.Object) => {
-  const objects = canvas.getObjects();
-  return objects.find(
-    (obj) =>
-      obj.left === object.left &&
-      obj.top === object.top &&
-      obj.type === object.type
-  );
-};
-
 export class ScaleTool extends Tool {
   // Only one line is allowed for document with multiple pages
   // So we need to keep track of line and points as class wide properties
-  private line: fabric.Line | null;
-  private startPoint: fabric.Circle | null;
-  private endPoint: fabric.Circle | null;
+  private group: fabric.Group | null;
   private lastPageNumber: number | null;
   private disposersMap: Map<number, () => void>;
 
   constructor({ editor }: { editor: MeasurementsPlugin }) {
     super({ editor });
-    this.line = null;
-    this.startPoint = null;
-    this.endPoint = null;
+    this.group = null;
     this.lastPageNumber = null;
     this.disposersMap = new Map();
-    this.clearPrevPage.bind(this);
+    this.clearPage.bind(this);
     this.activate.bind(this);
     this.deactivate.bind(this);
+    this.editor.eventBus.on(
+      PluginEvents.SetUnit,
+      this.renderMeasurement.bind(this)
+    );
   }
 
-  public activate({ pageNumber }: { pageNumber: number }): void {
-    setTimeout(() => {
-      const canvas = this.editor.canvasMap.get(pageNumber);
-
+  public renderMeasurement(): void {
+    this.editor.canvasMap.forEach((canvas) => {
       if (!canvas) {
         // TODO: Add error handling
         return;
       }
 
-      const dispose = canvas.on("mouse:down", (event) =>
-        this.onMouseDown(event, canvas, pageNumber)
-      );
-      this.disposersMap.set(pageNumber, dispose);
-    }, 10);
+      const scaleToolGroup = canvas
+        .getObjects()
+        .filter((obj) => obj.creator === "scaletool") as fabric.Group[];
+
+      scaleToolGroup.forEach((group) => {
+        const [startPoint, endPoint, , text] = group.getObjects();
+
+        const lengthInPixels = calculatePointsDistance(
+          { x: startPoint.getX(), y: startPoint.getY() },
+          { x: endPoint.getX(), y: endPoint.getY() }
+        );
+        const pixelsPerUnit = lengthInPixels / this.editor.unit;
+        text.set("text", String(this.editor.unit));
+        this.editor.pixelsPerUnit = pixelsPerUnit;
+        canvas.renderAll();
+      });
+    });
+  }
+
+  private get isGroupFinished() {
+    return this.group?.getObjects().length === 4;
+  }
+
+  public activate({ pageNumber }: { pageNumber: number }): void {
+    const canvas = this.editor.canvasMap.get(pageNumber);
+
+    if (!canvas) {
+      // TODO: Add error handling
+      return;
+    }
+
+    const dispose = canvas.on("mouse:down", (event) =>
+      this.onMouseDown(event, canvas, pageNumber)
+    );
+    this.disposersMap.set(pageNumber, dispose);
   }
 
   private onMouseDown = (
@@ -56,7 +81,7 @@ export class ScaleTool extends Tool {
     pageNumber: number
   ) => {
     if (this.lastPageNumber && this.lastPageNumber !== pageNumber) {
-      this.clearPrevPage(this.lastPageNumber);
+      this.clearPage(this.lastPageNumber);
     }
 
     this.lastPageNumber = pageNumber;
@@ -64,109 +89,67 @@ export class ScaleTool extends Tool {
     const clickX = pointer.x;
     const clickY = pointer.y;
 
-    // reset points
-    if (this.startPoint && this.endPoint && this.line) {
-      // There is a bug in fabric.js that it doesn't remove objects after page rerender
-      // So we need to find similar objects and remove them with custom matcher
-      const startPoint = findSimilarObject(canvas, this.startPoint);
-      if (startPoint) {
-        canvas.remove(startPoint);
-        this.startPoint = null;
-      }
-      const endPoint = findSimilarObject(canvas, this.endPoint);
-      if (endPoint) {
-        canvas.remove(endPoint);
-        this.endPoint = null;
-      }
-      const line = findSimilarObject(canvas, this.line);
-      if (line) {
-        canvas.remove(line);
-        this.line = null;
-      }
+    // reset group
+    if (this.isGroupFinished) {
+      this.clearPage(pageNumber);
     }
 
-    if (!this.startPoint) {
-      this.startPoint = new fabric.Circle({
-        radius: 5,
-        fill: "blue",
+    // Draw start point only
+    if (!this.group) {
+      const newStartPoint = new fabric.Circle({
         left: clickX,
         top: clickY,
-        selectable: false,
-        originX: "center",
-        originY: "center",
-        hoverCursor: "auto",
+        ...CIRCLE_CONFIG,
       });
-      canvas.add(this.startPoint);
+      const group = new fabric.Group([newStartPoint], GROUP_CONFIG);
+      group.creator = "scaletool";
+      canvas.add(group);
+      this.group = group;
       this.editor.serializeCanvas(pageNumber);
       return;
     }
 
-    this.line = new fabric.Line(
-      [this.startPoint.left, this.startPoint.top, clickX, clickY],
-      {
-        stroke: "blue",
-        strokeWidth: 4,
-        hasControls: false,
-        hasBorders: false,
-        selectable: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        hoverCursor: "default",
-        originX: "center",
-        originY: "center",
-      }
+    const startPoint = this.group.item(0);
+    const line = new fabric.Line(
+      [startPoint.getX(), startPoint.getY(), clickX, clickY],
+      LINE_CONFIG
     );
 
-    this.endPoint = new fabric.Circle({
-      radius: 5,
-      fill: "blue",
+    const endPoint = new fabric.Circle({
       left: clickX,
       top: clickY,
-      selectable: false,
-      originX: "center",
-      originY: "center",
-      hoverCursor: "auto",
+      ...CIRCLE_CONFIG,
     });
 
-    canvas.add(this.endPoint);
-    canvas.add(this.line);
+    const lineCenter = line.getCenterPoint();
+    const text = new fabric.FabricText("", {
+      left: lineCenter.x,
+      top: lineCenter.y,
+    });
+    this.group?.add(endPoint, line, text);
+    this.renderMeasurement();
     this.editor.serializeCanvas(pageNumber);
 
-    const lineDistance = calculatePointsDistance(
-      { x: this.startPoint.getX(), y: this.startPoint.getY() },
-      { x: this.endPoint.getX(), y: this.endPoint.getY() }
-    );
+    // const measurement = calculatePointsDistance(
+    //   { x: startPoint.getX(), y: startPoint.getY() },
+    //   { x: endPoint.getX(), y: endPoint.getY() }
+    // );
 
-    this.editor._onMeasureCallback(lineDistance);
+    this.editor.eventBus.dispatch(PluginEvents.ChangeScale, {});
+    this.editor.disableTool();
   };
 
-  private clearPrevPage(pageNumber: number) {
+  private clearPage(pageNumber: number) {
     const canvas = this.editor.canvasMap.get(pageNumber);
     if (!canvas) {
-      this.startPoint = null;
-      this.endPoint = null;
-      this.line = null;
+      this.group = null;
       return;
     }
-    if (this.startPoint) {
-      const startPoint = findSimilarObject(canvas, this.startPoint);
-      if (startPoint) {
-        canvas.remove(startPoint);
-        this.startPoint = null;
-      }
-    }
-    if (this.endPoint) {
-      const endPoint = findSimilarObject(canvas, this.endPoint);
-      if (endPoint) {
-        canvas.remove(endPoint);
-        this.endPoint = null;
-      }
-    }
-    if (this.line) {
-      const line = findSimilarObject(canvas, this.line);
-      if (line) {
-        canvas.remove(line);
-        this.line = null;
+    if (this.group) {
+      const group = findSimilarFabricObject(canvas, this.group);
+      if (group) {
+        canvas.remove(group);
+        this.group = null;
       }
     }
     this.editor.serializeCanvas(pageNumber);
@@ -181,12 +164,12 @@ export class ScaleTool extends Tool {
       return;
     }
     if (
-      this.startPoint &&
-      (!this.endPoint || !this.line) &&
-      canvas.contains(this.startPoint)
+      this.group &&
+      this.group.getObjects().length === 1 &&
+      canvas.contains(this.group)
     ) {
-      canvas.remove(this.startPoint);
-      this.startPoint = null;
+      canvas.remove(this.group);
+      this.group = null;
     }
   }
 

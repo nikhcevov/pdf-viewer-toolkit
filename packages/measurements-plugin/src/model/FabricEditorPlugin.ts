@@ -1,5 +1,6 @@
 import * as fabric from "fabric";
 import { EditorPlugin, PluginProps } from "@pdf-viewer-toolkit/core";
+import { SERIALIZABLE_PROPERTIES } from "../config/consts";
 
 export class FabricEditorPlugin extends EditorPlugin {
   private _fabricCanvasMap: Map<number, fabric.Canvas>;
@@ -65,7 +66,8 @@ export class FabricEditorPlugin extends EditorPlugin {
       return;
     }
 
-    this._fabricCanvasStorage.set(pageNumber, fabricCanvas.toJSON());
+    const serializedCanvas = fabricCanvas.toObject(SERIALIZABLE_PROPERTIES);
+    this._fabricCanvasStorage.set(pageNumber, serializedCanvas);
   }
 
   public _toggleEditor() {
