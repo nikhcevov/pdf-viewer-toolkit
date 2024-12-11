@@ -12,7 +12,7 @@ const { viewer, setDocument, loadPlugin } = new PDFViewer({
 const measurementsPlugin = new MeasurementsPlugin({ viewer });
 loadPlugin(measurementsPlugin);
 
-setDocument("essay.pdf").then(() => {
+setDocument("light_pdf.pdf").then(() => {
   const onPrevPage = () => {
     viewer.previousPage();
   };
