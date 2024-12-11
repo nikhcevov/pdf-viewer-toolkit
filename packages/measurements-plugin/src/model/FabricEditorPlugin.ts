@@ -1,10 +1,15 @@
 import * as fabric from "fabric";
-import { EditorPlugin, PluginProps } from "@pdf-viewer-toolkit/core";
-import { SERIALIZABLE_PROPERTIES } from "../config/consts";
+import {
+  EditorPlugin,
+  PageRenderEvent,
+  PluginProps,
+} from "@pdf-viewer-toolkit/core";
+import { CanvasStorage } from "./CanvasStorage";
+import { updateCanvasObjectDimensions } from "../lib/updateCanvasObjectDimensions";
 
 export class FabricEditorPlugin extends EditorPlugin {
   private _fabricCanvasMap: Map<number, fabric.Canvas>;
-  private _fabricCanvasStorage: Map<number, string>;
+  private _fabricCanvasStorage: CanvasStorage;
 
   constructor({ viewer }: PluginProps) {
     super({ viewer });
@@ -12,7 +17,7 @@ export class FabricEditorPlugin extends EditorPlugin {
     this._editorEventBus.on("pagereset", this.onPageReset);
     this._toggleEditor = this._toggleEditor.bind(this);
     this._fabricCanvasMap = new Map();
-    this._fabricCanvasStorage = new Map();
+    this._fabricCanvasStorage = new CanvasStorage();
   }
 
   public get canvasMap() {
@@ -23,21 +28,27 @@ export class FabricEditorPlugin extends EditorPlugin {
     this._fabricCanvasMap.delete(pageNumber);
   };
 
-  private onFabricPageRender = ({ pageNumber }: { pageNumber: number }) => {
-    const page = this._getPageByNumber(pageNumber);
-    if (!page) {
-      // TODO: Add error handling
-      return;
-    }
-
+  private onFabricPageRender = async ({
+    pageNumber,
+    height,
+    width,
+  }: PageRenderEvent) => {
     const editorCanvas = this._getPageEditorCanvas(pageNumber);
     const fabricCanvas = new fabric.Canvas(editorCanvas);
+    fabricCanvas.setDimensions({ height: height, width: width });
 
     const fabricCanvasStorage = this._fabricCanvasStorage.get(pageNumber);
     if (fabricCanvasStorage) {
-      fabricCanvas
-        .loadFromJSON(fabricCanvasStorage)
-        .then((canvas) => canvas.requestRenderAll());
+      await this._fabricCanvasStorage.deserialize(pageNumber, fabricCanvas);
+
+      // adjust object positions on canvas
+      updateCanvasObjectDimensions(
+        fabricCanvas,
+        fabricCanvasStorage?.height,
+        fabricCanvasStorage?.width
+      );
+      // To store updated object positions
+      this._fabricCanvasStorage.serialize(pageNumber, fabricCanvas);
     }
 
     const fabricCanvasWrapper =
@@ -49,15 +60,7 @@ export class FabricEditorPlugin extends EditorPlugin {
       fabricCanvasWrapper.style.height = "100%";
     }
 
-    const pageCanvas = page.canvas;
-    if (pageCanvas) {
-      fabricCanvas.setDimensions({
-        height: pageCanvas.clientHeight,
-        width: pageCanvas.clientWidth,
-      });
-    }
-
-    this._fabricCanvasMap.set(page.id, fabricCanvas);
+    this._fabricCanvasMap.set(pageNumber, fabricCanvas);
   };
 
   public serializeCanvas(pageNumber: number) {
@@ -66,8 +69,7 @@ export class FabricEditorPlugin extends EditorPlugin {
       return;
     }
 
-    const serializedCanvas = fabricCanvas.toObject(SERIALIZABLE_PROPERTIES);
-    this._fabricCanvasStorage.set(pageNumber, serializedCanvas);
+    this._fabricCanvasStorage.serialize(pageNumber, fabricCanvas);
   }
 
   public _toggleEditor() {
@@ -75,9 +77,14 @@ export class FabricEditorPlugin extends EditorPlugin {
 
     if (this.isEditorEnabled) {
       this._pages.forEach((page) => {
-        this.onFabricPageRender({ pageNumber: page.id });
+        this.onFabricPageRender({
+          pageNumber: page.id,
+          height: page.height,
+          width: page.width,
+        });
       });
     } else {
+      // TODO
       console.log("off fabric");
     }
   }
