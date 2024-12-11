@@ -1,3 +1,4 @@
+import { PageRenderEvent, PageResetEvent } from "../config/types";
 import { EventBus } from "../lib/EventBus";
 import { Plugin } from "./Plugin";
 
@@ -7,6 +8,9 @@ import type { PDFPageView } from "pdfjs-dist/web/pdf_viewer.mjs";
 interface EventWithPageNumber {
   pageNumber: number;
 }
+interface PageEvent extends EventWithPageNumber {
+  source: PDFPageView;
+}
 const makeCanvasElementId = (pageNumber: number) =>
   `page-editor-canvas-${pageNumber}`;
 
@@ -14,13 +18,6 @@ const makeCanvasElementId = (pageNumber: number) =>
  * Class provides methods to work with viewer canvas editor.
  * Use it as a template for your own plugins, to implement
  * any drawing functionality.
- *
- * Provides document-wide methods:
- *  - `toggleEditor` - to toggle editor layer (render/destroy editor canvas elements)
- *
- * Provides page-wide events:
- *  - `pagerender` - when page is rendered
- *  - `pagereset` - when page is reseted (page is being removed from cache, and canvas destroyed)
  */
 export class EditorPlugin extends Plugin {
   private isEditorLayerEnabled: boolean;
@@ -40,21 +37,6 @@ export class EditorPlugin extends Plugin {
   }
 
   public load(): void {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    window.viewr = this.viewer;
-    // const makeSafe = function (fn) {
-    //   return function () {
-    //     try {
-    //       console.log(arguments);
-    //       return fn.apply(this, arguments);
-    //     } catch (ex) {
-    //       console.log(ex);
-    //     }
-    //   };
-    // };
-    // this.viewer.eventBus.dispatch = makeSafe(this.viewer.eventBus.dispatch);
-
     this.viewer.eventBus.on("pagerender", this.onPageRender);
     this.viewer.eventBus.on("textlayerrendered", this.onTextLayerRendered);
     this.viewer.eventBus.on("pagerendered", this.onPageRendered);
@@ -211,17 +193,26 @@ export class EditorPlugin extends Plugin {
 
     for (const id of prevPageNumbers) {
       if (!currentPageNumbers.includes(id)) {
-        this.editorEventBus.dispatch("pagereset", { pageNumber: id });
+        const eventPayload: PageResetEvent = {
+          pageNumber: id,
+        };
+        this.editorEventBus.dispatch("pagereset", eventPayload);
       }
     }
 
     this.currentPageNumbers = currentPageNumbers;
   };
 
-  private onPageRendered = ({ pageNumber }: EventWithPageNumber) => {
+  private onPageRendered = ({ pageNumber, source }: PageEvent) => {
     if (this.isEditorLayerEnabled) {
       this.renderPageCanvas({ pageNumber });
-      this.editorEventBus.dispatch("pagerender", { pageNumber });
+
+      const eventPayload: PageRenderEvent = {
+        pageNumber,
+        height: source.height,
+        width: source.width,
+      };
+      this.editorEventBus.dispatch("pagerender", eventPayload);
     }
   };
 
