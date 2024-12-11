@@ -5,3 +5,4 @@ export { Plugin } from "./model/Plugin";
 export type { PluginProps } from "./model/Plugin";
 
 export { EditorPlugin } from "./model/EditorPlugin";
+export type { PageRenderEvent, PageResetEvent } from "./config/types";
