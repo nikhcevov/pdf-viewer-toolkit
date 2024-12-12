@@ -1,0 +1,45 @@
+{
+  "name": "@pdf-viewer-toolkit/react",
+  "version": "1.0.0",
+  "description": "React integration package for PDF Viewer Toolkit, contains PDF Viewer component",
+  "main": "dist/pdf-viewer-toolkit-react.cjs.js",
+  "module": "dist/pdf-viewer-toolkit-react.esm.js",
+  "types": "dist/pdf-viewer-toolkit-react.cjs.d.ts",
+  "files": [
+    "src",
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "typescript",
+    "react",
+    "pdf",
+    "viewer",
+    "toolkit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nikhcevov/pdf-viewer-toolkit.git"
+  },
+  "author": "Vladimir Ovechkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nikhcevov/pdf-viewer-toolkit/issues"
+  },
+  "homepage": "https://github.com/nikhcevov/pdf-viewer-toolkit#readme",
+  "dependencies": {
+    "@babel/runtime": "7.20.7"
+  },
+  "devDependencies": {
+    "react": "^19.0.0",
+    "typescript": "4.9.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@pdf-viewer-toolkit/core": "1.0.0",
+    "react": "*"
+  }
+}
