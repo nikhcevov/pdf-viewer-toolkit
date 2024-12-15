@@ -1,35 +1,43 @@
 import { PDFViewer } from "@pdf-viewer-toolkit/core";
-import React, { useEffect } from "react";
+import React, {
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 export interface ViewerContextType {
   viewer: PDFViewer | null;
   isLoaded: boolean;
-  containerEl: React.RefObject<HTMLDivElement>;
-  viewerEl: React.RefObject<HTMLDivElement>;
+  containerEl: React.RefObject<HTMLDivElement | null>;
+  viewerEl: React.RefObject<HTMLDivElement | null>;
+  isContextProviderExist: boolean;
 }
 
 export const ViewerContext = React.createContext<ViewerContextType>({
   viewer: null,
   isLoaded: false,
-  containerEl: null,
-  viewerEl: null,
+  containerEl: { current: null },
+  viewerEl: { current: null },
+  isContextProviderExist: false,
 });
 
-export const ViewerContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const [isLoaded, setIsLoaded] = React.useState(false);
-  const [viewer, setViewer] = React.useState<PDFViewer | null>(null);
-  const viewerEl = React.useRef<HTMLDivElement>(null);
-  const containerEl = React.useRef<HTMLDivElement>(null);
+export const ViewerContextProvider: FC<PropsWithChildren> = ({ children }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [viewer, setViewer] = useState<PDFViewer | null>(null);
+  const viewerEl = useRef<HTMLDivElement>(null);
+  const containerEl = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!viewerEl.current || !containerEl.current) {
+      throw new Error(
+        "ViewerContextProvider must be used with a Viewer component"
+      );
+    }
+
     const viewer = new PDFViewer({
-      // TODO: fix this
       container: containerEl.current,
-      // TODO: fix this
       viewer: viewerEl.current,
     });
 
@@ -48,6 +56,7 @@ export const ViewerContextProvider = ({
         isLoaded,
         containerEl,
         viewerEl,
+        isContextProviderExist: true,
       }}
     >
       {children}

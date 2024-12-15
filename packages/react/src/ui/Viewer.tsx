@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { useViewerContext } from "../model/useViewerContext";
-import "./Viewer.css";
+import { useInternalViewerContext } from "../model/useInternalViewerContext";
 
 export const Viewer = ({
   document,
@@ -9,7 +8,8 @@ export const Viewer = ({
   document: string;
   className?: string;
 }) => {
-  const { viewer, isLoaded, containerEl, viewerEl } = useViewerContext();
+  const { viewer, isLoaded, viewerEl, containerEl } =
+    useInternalViewerContext();
 
   useEffect(() => {
     if (!isLoaded || !viewer) {
@@ -23,10 +23,11 @@ export const Viewer = ({
     <div
       id="pageContainer"
       ref={containerEl}
-      // Class pdfViewer-container is required with position: absolute property by pdfjs-dist
-      className={`pdfViewer-container ${className}`}
+      className={className}
+      // Position absolute is required for correct positioning of the viewer
+      style={{ position: "absolute" }}
     >
-      {/* Class pdfViewer is added by pdfjs-dist */}
+      {/* Class `pdfViewer` is added by pdfjs-dist */}
       <div id="viewer" ref={viewerEl} className="pdfViewer" />
     </div>
   );

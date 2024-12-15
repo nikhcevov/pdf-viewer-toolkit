@@ -1,11 +1,9 @@
 import { useContext } from "react";
 import { ViewerContext, ViewerContextType } from "../ui/ViewerContext";
 
-type UseViewerContextType = () => {
-  viewer: ViewerContextType["viewer"];
-};
+type UseInternalViewerContextType = () => ViewerContextType;
 
-export const useViewerContext: UseViewerContextType = () => {
+export const useInternalViewerContext: UseInternalViewerContextType = () => {
   const context = useContext(ViewerContext);
 
   if (!context.isContextProviderExist) {
@@ -14,5 +12,5 @@ export const useViewerContext: UseViewerContextType = () => {
     );
   }
 
-  return { viewer: context.viewer };
+  return context;
 };
