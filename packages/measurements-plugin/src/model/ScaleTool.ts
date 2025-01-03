@@ -4,6 +4,7 @@ import {
   LINE_CONFIG,
   GROUP_CONFIG,
 } from "../config/consts";
+import { addObjectDeleteButton } from "../lib/addObjectDeleteButton";
 import { calculatePointsDistance } from "../lib/calculatePointsDistance";
 import { findSimilarFabricObject } from "../lib/findSimilarFabricObject";
 import { MeasurementsPlugin } from "./MeasurementsPlugin";
@@ -102,6 +103,10 @@ export class ScaleTool extends Tool {
         ...CIRCLE_CONFIG,
       });
       const group = new fabric.Group([newStartPoint], GROUP_CONFIG);
+      const onGroupDelete = () => {
+        this.group = null;
+      }
+      addObjectDeleteButton(group, onGroupDelete)
       group.creator = "scaletool";
       canvas.add(group);
       this.group = group;

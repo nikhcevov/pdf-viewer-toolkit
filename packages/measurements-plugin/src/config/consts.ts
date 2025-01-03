@@ -37,8 +37,11 @@ export const CIRCLE_CONFIG: Partial<CircleProps> = {
 };
 
 export const GROUP_CONFIG: Partial<GroupProps> = {
-  hasControls: false,
   subTargetCheck: true,
+  hasControls: true,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  controls: {},
 };
 
 const serializableProperties: string[] = [

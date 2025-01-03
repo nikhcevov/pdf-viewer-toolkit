@@ -5,6 +5,7 @@ import {
   PluginEvents,
   GROUP_CONFIG,
 } from "../config/consts";
+import { addObjectDeleteButton } from "../lib/addObjectDeleteButton";
 import { calculatePolygonArea } from "../lib/calculatePolygonArea";
 import { findSimilarFabricObject } from "../lib/findSimilarFabricObject";
 import { removeCanvasObjects } from "../lib/removeCanvasObjects";
@@ -123,6 +124,8 @@ export class AreaTool extends Tool {
         });
         const group = new fabric.Group([poly, text], GROUP_CONFIG);
         group.creator = "areatool";
+        group.canvas = canvas;
+        addObjectDeleteButton(group)
 
         removeCanvasObjects(canvas, [...this.pipePoints, ...this.pipeLines]);
         this.pipeLines = [];
