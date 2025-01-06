@@ -3,6 +3,7 @@ import {
   PluginEvents,
   LINE_CONFIG,
   GROUP_CONFIG,
+  TEXT_CONFIG,
 } from "../config/consts";
 import { addObjectDeleteButton } from "../lib/addObjectDeleteButton";
 import { calculatePointsDistance } from "../lib/calculatePointsDistance";
@@ -127,9 +128,12 @@ export class ScaleTool extends Tool {
     });
 
     const lineCenter = line.getCenterPoint();
+
+    // TODO: Calculate left and top shift for text to avoid overlap with line
     const text = new fabric.FabricText("", {
-      left: lineCenter.x,
-      top: lineCenter.y,
+      ...TEXT_CONFIG,
+      left: lineCenter.x - 20,
+      top: lineCenter.y - 20,
     });
     this.group?.add(endPoint, line, text);
     this.renderMeasurement();

@@ -4,6 +4,7 @@ import {
   POLIGON_CONFIG,
   PluginEvents,
   GROUP_CONFIG,
+  TEXT_CONFIG,
 } from "../config/consts";
 import { addObjectDeleteButton } from "../lib/addObjectDeleteButton";
 import { calculatePolygonArea } from "../lib/calculatePolygonArea";
@@ -119,6 +120,7 @@ export class AreaTool extends Tool {
         // poly.controls = fabric.controlsUtils.createPolyControls(poly);
         const polygonCenter = poly.getCenterPoint();
         const text = new fabric.FabricText("", {
+          ...TEXT_CONFIG,
           left: polygonCenter.x,
           top: polygonCenter.y,
         });
